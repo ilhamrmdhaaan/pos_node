@@ -131,6 +131,12 @@ const createSell = async (req, res) => {
 
     try {
 
+        const payloadOptions = {
+            // 
+        }
+
+        const inovice = '';
+
         const sellMaster = await Sell.create({
             sellCode: Math.round((Math.pow(36, 13 + 1) - Math.random() * Math.pow(36, 13))).toString(36).slice(1),
             sellDate: sellDate,
