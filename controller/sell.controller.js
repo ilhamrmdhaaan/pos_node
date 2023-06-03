@@ -1,5 +1,38 @@
 const { Sell, Sell_detail, sequelize, Item } = require("../models/index");
 const { Op } = require("sequelize");
+const xendit = require('xendit-node');
+
+
+// Create invoice
+async function createInvoice(req, external) {
+    let grandTotal = req.body.grand_total
+    
+    const config = new xendit({
+        secretKey : 'xnd_development_XxaRLUSukivZ9IakCfRF1s83LKd8cuA9ISiKV2F1M1wGPn3Bp2X95IAkwTxKcH'
+    })
+    const { Invoice } = config;
+
+    const payloadOptions = {
+        externalID: external,
+        description: 'Invoice Demo #123',
+        amount: grandTotal
+        
+    };
+
+    const i = new Invoice;
+
+    
+    try {
+         const result =  await i.createInvoice(payloadOptions)        
+
+         return result
+        
+    } catch (error) {
+        console.log(e);
+
+        return error;
+    }
+}
 
 const showSell = async (req, res) => {
 
@@ -131,14 +164,10 @@ const createSell = async (req, res) => {
 
     try {
 
-        const payloadOptions = {
-            // 
-        }
-
-        const inovice = '';
+        const external = Math.round((Math.pow(36, 13 + 1) - Math.random() * Math.pow(36, 13))).toString(36).slice(1);
 
         const sellMaster = await Sell.create({
-            sellCode: Math.round((Math.pow(36, 13 + 1) - Math.random() * Math.pow(36, 13))).toString(36).slice(1),
+            sellCode: external,
             sellDate: sellDate,
             subtotal: data.subtotal,
             discount: data.discount || 0,
@@ -168,6 +197,8 @@ const createSell = async (req, res) => {
             ]
         });
 
+        // Call invoice
+        let callInvoice = await createInvoice(req, external);
 
         const sellDetail = await Sell_detail.bulkCreate(details, {...options, validate: true});
 
@@ -176,7 +207,8 @@ const createSell = async (req, res) => {
 
         response.code = 200;
         response.data = {
-            id: sellMaster.id
+            id: sellMaster.id,
+            invoice_url : callInvoice.invoice_url
         }
 
     } catch (error) {

@@ -21,7 +21,8 @@
     "mysql2": "^3.2.4",
     "nodemailer": "^6.9.3",
     "sequelize": "^6.31.0",
-    "sequelize-cli": "^6.6.0"
+    "sequelize-cli": "^6.6.0",
+    "xendit-node": "^1.21.11"
   },
   "devDependencies": {
     "@faker-js/faker": "^7.6.0",
